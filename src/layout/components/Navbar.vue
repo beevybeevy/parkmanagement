@@ -27,7 +27,7 @@ export default {
   methods: {
     // 退出登录
     logout() {
-      this.$store.commit('setToken') // 清除cookie
+      this.$store.commit('user/setToken') // 清除cookie
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
