@@ -23,3 +23,32 @@ export function validUsername(str) {
 export function validMobile(mobile) {
   return /^1[3-9]\d{9}$/.test(mobile)
 }
+
+// 生成一个必填项的校验规则函数
+/**
+ *
+ * @param {string} message 错误时的提示信息
+ * @param {string} trigger 触发方式
+ * @returns
+ */
+export function createRequiredRule(message, trigger = 'blur') {
+  return {
+    required: true, message, trigger
+  }
+}
+
+/**
+ *
+ * @param {RegExp} reg  正则规则
+ * @param {string} message 错误提示信息
+ * @param {string} trigger 触发方式
+ * @returns
+ */
+
+export function createPatternRule(reg, message, trigger = 'blur') {
+  return {
+    pattern: reg,
+    message,
+    trigger
+  }
+}

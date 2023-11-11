@@ -26,20 +26,26 @@
       <div class="form-container">
         <div class="title">最新一次月卡缴费信息</div>
         <div class="form">
-          <el-form label-width="100px">
-            <el-form-item label="有效日期">
-              <el-input />
+          <el-form ref="feeForm" label-width="100px" :rules="feeFormRules" :model="feeForm">
+            <el-form-item label="有效日期" prop="payTime">
+              <el-date-picker
+                v-model="feeForm.payTime"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              />
             </el-form-item>
-            <el-form-item label="支付金额">
-              <el-input />
+            <el-form-item label="支付金额" prop="paymentAmount">
+              <el-input v-model="feeForm.paymentAmount" />
             </el-form-item>
-            <el-form-item label="支付方式">
-              <el-select>
+            <el-form-item label="支付方式" prop="paymentMethod">
+              <el-select v-model="feeForm.paymentMethod">
                 <el-option
-                  v-for="item in [{}]"
-                  :key="item.industryCode"
-                  :value="item.industryCode"
-                  :label="item.industryName"
+                  v-for="item in payMethodList"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"
                 />
               </el-select>
             </el-form-item>
@@ -58,6 +64,7 @@
 </template>
 
 <script>
+import { createRequiredRule, createPatternRule } from '@/utils/validate'
 export default {
   data() {
     return {
@@ -67,33 +74,59 @@ export default {
         carNumber: '', // 车牌号码
         carBrand: '' // 车辆品牌
       },
+      feeForm: {
+        payTime: '', // 支付时间
+        paymentAmount: null, // 支付金额
+        paymentMethod: ''// 支付方
+      },
       carInfoRules: {
         personName: [
-          {
-            required: true, message: '请输入车主姓名', trigger: 'blur'
-          }
+          createRequiredRule('请输入车主姓名')
         ],
         phoneNumber: [
-          {
-            required: true, message: '请输入联系方式', trigger: 'blur'
-          }
+          createRequiredRule('请输入联系方式')
         ],
         carNumber: [
-          {
-            required: true, message: '请输入车辆号码', trigger: 'blur'
-          }
+          createRequiredRule('请输入车辆号码'),
+          createPatternRule(/^[\u4E00-\u9FA5][\da-zA-Z]{6}$/, '请输入正确的车牌号')
         ],
         carBrand: [
-          {
-            required: true, message: '请输入车辆品牌', trigger: 'blur'
-          }
+          createRequiredRule('请输入车辆品牌')
         ]
-      }
+      },
+      feeFormRules: {
+        payTime: [
+          createRequiredRule('请选择支付时间')
+        ],
+        paymentAmount: [
+          createRequiredRule('请输入支付金额')
+        ],
+        paymentMethod: [
+          createRequiredRule('请选择支付方式')
+        ]
+      },
+      payMethodList: [
+        {
+          id: 'Alipay',
+          name: '支付宝'
+        },
+        {
+          id: 'WeChat',
+          name: '微信'
+        },
+        {
+          id: 'Cash',
+          name: '线下'
+        }
+      ]
     }
   },
   methods: {
     doSubmit() {
-      this.$refs.carForm.validate()
+      Promise.all([
+        this.$refs.carForm.validate(),
+        this.$refs.feeForm.validate()
+      ])
         .then(() => {
           console.log('校验成功')
         })
