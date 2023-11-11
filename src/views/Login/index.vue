@@ -3,27 +3,27 @@
     <div class="bg" />
     <div class="box">
       <div class="title">智慧园区-登录</div>
-      <el-form ref="form">
+      <el-form ref="form" :model="formData" :rules="rules">
         <el-form-item
           label="账号"
           prop="username"
         >
-          <el-input />
+          <el-input v-model="formData.username" placeholder="请输入用户名" />
         </el-form-item>
 
         <el-form-item
           label="密码"
           prop="password"
         >
-          <el-input />
+          <el-input v-model="formData.password" placeholder="请输入密码" type="password" />
         </el-form-item>
 
         <el-form-item prop="remember">
-          <el-checkbox>记住我</el-checkbox>
+          <el-checkbox v-model="rememberMe">记住我</el-checkbox>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="login_btn">登录</el-button>
+          <el-button type="primary" class="login_btn" @click="doLogin(formData)">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -33,7 +33,47 @@
 <script>
 
 export default {
-  name: 'Login'
+  name: 'Login',
+  data: function() {
+    return {
+      formData: {
+        username: '',
+        password: ''
+      },
+      rememberMe: false,
+      rules: {
+        username: [
+          { required: true, message: '用户名不能为空' }
+        ],
+        password: [
+          { message: '密码不能为空', min: 4, max: 10, trigger: 'blur' }// 这里定义了最少和最多的位数，所以可以不用写required
+        ]
+      }
+    }
+  },
+  created() {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    if (userInfo) {
+      this.formData.username = userInfo.username
+      this.formData.password = userInfo.password
+      this.rememberMe = true
+    }
+  },
+  methods: {
+    doLogin() {
+      this.$refs.form.validate()
+        .then(() => {
+          // 数据持久化
+          return this.$store.dispatch('user/userLoginAction', this.formData)
+        })
+        .then(() => {
+          this.rememberMe
+            ? localStorage.setItem('userInfo', JSON.stringify(this.formData)) : localStorage.removeItem('userInfo')
+          this.$router.push('/workbench')
+        })
+        .catch(() => {})
+    }
+  }
 
 }
 
