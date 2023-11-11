@@ -3,18 +3,24 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <span class="search-label">车牌号码：</span>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-input v-model="query.carNumber" clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">车主姓名：</span>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-input v-model="query.personName" clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">状态：</span>
       <el-select>
-        <el-option v-for="item in []" :key="item.id" />
+        <el-option
+          v-for="item in cardStatusList"
+          :key="item.id"
+          :label="item.label"
+          :value="item.value"
+        />
+
       </el-select>
-      <el-button type="primary" class="search-btn">查询</el-button>
+      <el-button type="primary" class="search-btn" @click="doSearch">查询</el-button>
     </div>
     <!-- 新增删除操作区域 -->
     <div class="create-container">
-      <el-button type="primary">添加月卡</el-button>
+      <el-button type="primary" @click="$router.push('/cardAdd')">添加月卡</el-button>
       <el-button>批量删除</el-button>
     </div>
     <!-- 表格区域 -->
@@ -88,10 +94,25 @@ export default {
       list: [],
       query: {
         page: 1,
-        pageSize: 2
+        pageSize: 2,
+        carNumber: null,
+        personName: null,
+        cardStatus: null
       },
       loading: false,
-      total: ''
+      total: '',
+      cardStatusList: [{
+        value: null,
+        label: '全部'
+      }, {
+        value: 0,
+        label: '可用'
+      },
+      {
+        value: 1,
+        label: '禁用'
+      }
+      ]
     }
   },
   created() {
@@ -112,6 +133,10 @@ export default {
     onCurrentChange(page) {
       this.query.page = page
       console.log(page)
+    },
+    doSearch() {
+      this.query.page = 1
+      this.getDataList()
     }
   }
 
