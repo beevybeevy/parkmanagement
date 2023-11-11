@@ -8,7 +8,7 @@ export default {
   },
   mutations: {
     // 修改Token的方法
-    setToken(state, payload) {
+    setToken(state, payload = '') { // 如果不传入payload，payload就是空字符串
       state.token = payload
       if (payload) {
         setToken(payload)
