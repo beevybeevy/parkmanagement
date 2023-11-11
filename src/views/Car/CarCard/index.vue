@@ -19,13 +19,17 @@
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="list">
+      <el-table v-loading="loading" style="width: 100%" :data="list">
         <el-table-column type="index" label="序号" prop="index" />
         <el-table-column label="车主名称" prop="personName" />
         <el-table-column label="联系方式" prop="phoneNumber" />
-        <el-table-column label="车牌号码" prop="carNumber " />
+        <el-table-column label="车牌号码" prop="carNumber" />
         <el-table-column label="车辆品牌" prop="carBrand" />
         <el-table-column label="剩余有效天数" prop="totalEffectiveDate" />
+        <el-table-column label="状态" prop="cardStatus" :formatter="formatStatus" />
+        <!-- <template #default="{row}">
+          {{  }}
+        </template> -->
         <el-table-column label="操作" fixed="right" width="180">
           <template #default="scope">
             <el-button size="mini" type="text">续费</el-button>
@@ -39,7 +43,10 @@
     <div class="page-container">
       <el-pagination
         layout="total, prev, pager, next"
-        :total="0"
+        :total="total"
+        :current-page="query.page"
+        :page-size="query.pageSize"
+        @current-change="onCurrentChange"
       />
     </div>
     <!-- 添加楼宇 -->
@@ -74,20 +81,38 @@
 
 <script>
 import { getCarCardListAPI } from '@/api/car'
+import { CARD_STATUS_2_Text } from '@/constants/KEY'
 export default {
   data() {
     return {
       list: [],
       query: {
         page: 1,
-        pageSize: 10
-      }
+        pageSize: 2
+      },
+      loading: false,
+      total: ''
     }
   },
-  async created() {
-    const res = await getCarCardListAPI(this.query)
-    this.list = res.data.rows
+  created() {
     // console.log(this.list)
+    this.getDataList()
+  },
+  methods: {
+    async getDataList() {
+      this.loading = true
+      const res = await getCarCardListAPI(this.query)
+      this.loading = false
+      this.list = res.data.rows
+      this.total = res.data.total
+    },
+    formatStatus(row) {
+      return CARD_STATUS_2_Text[row.cardStatus]
+    },
+    onCurrentChange(page) {
+      this.query.page = page
+      console.log(page)
+    }
   }
 
 }
