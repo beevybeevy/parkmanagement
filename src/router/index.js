@@ -112,6 +112,10 @@ export const routes = [
     component: () => import('@/views/Car/CarCard/add-card')
   },
   {
+    path: '/enterpriseAdd',
+    component: () => import('@/views/Park/Enterprise/add-company.vue')
+  },
+  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
