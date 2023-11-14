@@ -153,7 +153,11 @@ export default {
     },
     reset() {
       this.carInfoForm = { ...this.__carInfoForm }
+      // 这里还需要重置一下校验信息，使用elementUI中的方法
+      // 如果只有重置表单信息的话，就会出现表单数据清空但是校验提示信息不清空的情况
+      this.$refs.carForm.clearValidate()
       this.feeForm = { ...this.__feeForm }
+      this.$refs.feeForm.clearValidate()
     }
   }
 }

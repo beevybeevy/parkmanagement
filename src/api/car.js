@@ -5,7 +5,11 @@ export function getCarCardListAPI(query) {
     params: query
   })
 }
-
+/**
+ *
+ * @param {object} data  传入表单信息
+ * @returns
+ */
 export function addCarCardAPI(data) {
   return request.post('parking/card', data)
 }
