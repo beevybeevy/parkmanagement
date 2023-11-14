@@ -18,3 +18,13 @@ export function addCarCardAPI(data) {
 export function getCarCardDetailAPI(id) {
   return request.get(`parking/card/detail/${id}`)
 }
+
+// 编辑月卡
+export function editCarCardAPI(data) {
+  return request.put('parking/card/edit', data)
+}
+
+// 删除月卡
+export function deleteCarCardAPI(ids) {
+  return request.delete(`parking/card/${ids}`)
+}

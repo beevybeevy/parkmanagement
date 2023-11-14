@@ -21,11 +21,12 @@
     <!-- 新增删除操作区域 -->
     <div class="create-container">
       <el-button type="primary" @click="$router.push('/cardAdd')">添加月卡</el-button>
-      <el-button>批量删除</el-button>
+      <el-button @click="deleteCarCard(ids)">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table v-loading="loading" style="width: 100%" :data="list">
+      <el-table v-loading="loading" style="width: 100%" :data="list" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" prop="index" />
         <el-table-column label="车主名称" prop="personName" />
         <el-table-column label="联系方式" prop="phoneNumber" />
@@ -41,7 +42,7 @@
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/cardAdd?id='+row.id)">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
+            <el-button size="mini" type="text" @click="deleteCarCard([row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,7 +87,7 @@
 </template>
 
 <script>
-import { getCarCardListAPI } from '@/api/car'
+import { getCarCardListAPI, deleteCarCardAPI } from '@/api/car'
 import { CARD_STATUS_2_Text } from '@/constants/KEY'
 export default {
   data() {
@@ -137,6 +138,34 @@ export default {
     doSearch() {
       this.query.page = 1
       this.getDataList()
+    },
+    deleteCarCard(ids = []) {
+      if (ids.length === 0) {
+        this.$message.warning('请选择要删除的月卡')
+        return
+      }
+      this.$confirm('此操作将永久删除月卡, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+        // 1. 调接口
+          // 2. 提示用户
+          // 3. 重新渲染当前页（如果当前页有且只有一条数据，那么要渲染上一页）
+          return deleteCarCardAPI(ids)
+        })
+        .then(() => {
+          this.$message.success('删除成功')
+          if (this.list.length === 1 && this.query.page > 1) {
+            this.query.page--
+          }
+          this.getDataList()
+        })
+        .catch(() => {})
+    },
+    handleSelectionChange(selection = []) {
+      this.ids = selection.map(item => item.id)
     }
   }
 

@@ -1,7 +1,7 @@
 <template>
   <div v-loading="isLoading" class="add-card">
     <header class="add-header">
-      <el-page-header content="增加月卡" @back="$router.back()" />
+      <el-page-header :content="isEdit?'编辑月卡':'新增月卡'" @back="$router.back()" />
     </header>
     <main class="add-main">
       <div class="form-container">
@@ -65,10 +65,11 @@
 
 <script>
 import { createRequiredRule, createPatternRule } from '@/utils/validate'
-import { addCarCardAPI, getCarCardDetailAPI } from '@/api/car'
+import { addCarCardAPI, getCarCardDetailAPI, editCarCardAPI } from '@/api/car'
 export default {
   data() {
     return {
+      isEdit: '',
       isLoading: false,
       carInfoForm: {
         personName: '', // 车主姓名
@@ -124,14 +125,18 @@ export default {
     }
   },
   async created() {
-    this.isLoading = true
     // 这里使用的是浅拷贝,不能直接写this.__carInfoForm = this.carInfoForm是因为这样就直接赋值了，不是拷贝
     this.__carInfoForm = { ...this.carInfoForm }
     this.__feeForm = { ...this.feeForm }
     const id = this.$route.query.id
-    // console.log(id)
-
+    // 这里需要判断一下是不是编辑状态，避免没有id还要进行下面的逻辑判断
+    this.isEdit = !!id
+    // 如果不是编辑状态的话，就直接返回，不进行下面逻辑。展示空页面而且不需要id
+    if (!this.isEdit) return
+    this.carInfoId = id
+    this.isLoading = true
     const res = await getCarCardDetailAPI(id)
+    this.rechargeId = res.data.rechargeId
     this.isLoading = false
     console.log(res)
     this.carInfoForm = {
@@ -151,21 +156,27 @@ export default {
   },
   methods: {
     doSubmit() {
+      const data = {
+        ...this.carInfoForm,
+        cardStartDate: this.feeForm.payTime[0],
+        cardEndDate: this.feeForm.payTime[1],
+        paymentAmount: this.feeForm.paymentAmount,
+        paymentMethod: this.feeForm.paymentAmount }
+      const fn = this.isEdit ? editCarCardAPI : addCarCardAPI
+      if (this.isEdit) {
+        data.carInfoId = this.carInfoId
+        data.rechargeId = this.rechargeId
+      }
+
       Promise.all([
         this.$refs.carForm.validate(),
         this.$refs.feeForm.validate()
       ])
         .then(() => {
           // console.log('校验成功')
-          return addCarCardAPI({
-            ...this.carInfoForm,
-            cardStartDate: this.feeForm.payTime[0],
-            cardEndDate: this.feeForm.payTime[1],
-            paymentAmount: this.feeForm.paymentAmount,
-            paymentMethod: this.feeForm.paymentAmount
-          })
+          return fn(data)
         }).then(() => {
-          this.$message.success('添加月卡成功')
+          this.$message.success('操作成功')
           // 这里使用直接跳回更好一些
           this.$router.back()
         })
