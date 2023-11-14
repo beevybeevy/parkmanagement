@@ -5,3 +5,7 @@ export function getCarCardListAPI(query) {
     params: query
   })
 }
+
+export function addCarCardAPI(data) {
+  return request.post('parking/card', data)
+}

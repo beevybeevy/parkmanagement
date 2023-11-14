@@ -65,6 +65,7 @@
 
 <script>
 import { createRequiredRule, createPatternRule } from '@/utils/validate'
+import { addCarCardAPI } from '@/api/car'
 export default {
   data() {
     return {
@@ -88,7 +89,7 @@ export default {
         ],
         carNumber: [
           createRequiredRule('请输入车辆号码'),
-          createPatternRule(/^[\u4E00-\u9FA5][\da-zA-Z]{6}$/, '请输入正确的车牌号')
+          createPatternRule(/^[\u4E00-\u9FA5][\da-zA-Z]{7}$/, '请输入正确的车牌号')
         ],
         carBrand: [
           createRequiredRule('请输入车辆品牌')
@@ -128,7 +129,18 @@ export default {
         this.$refs.feeForm.validate()
       ])
         .then(() => {
-          console.log('校验成功')
+          // console.log('校验成功')
+          return addCarCardAPI({
+            ...this.carInfoForm,
+            cardStartDate: this.feeForm.payTime[0],
+            cardEndDate: this.feeForm.payTime[1],
+            paymentAmount: this.feeForm.paymentAmount,
+            paymentMethod: this.feeForm.paymentAmount
+          })
+        }).then(() => {
+          this.$message.success('添加月卡成功')
+          // 这里使用直接跳回更好一些
+          this.$router.back()
         })
         .catch(() => {
           console.log('校验失败')
@@ -139,75 +151,76 @@ export default {
 
 </script>
 
-  <style scoped lang="scss">
-  .add-card {
-    background-color: #f4f6f8;
-    height: 100vh;
+    <style scoped lang="scss">
+    .add-card {
+      background-color: #f4f6f8;
+      height: 100vh;
 
-    .add-header {
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      height: 64px;
-      background-color: #fff;
-
-      .left {
-        span {
-          margin-right: 4px;
-        }
-        .arrow{
-          cursor: pointer;
-        }
-      }
-
-      .right {
-        text-align: right;
-      }
-    }
-
-    .add-main {
-      background: #f4f6f8;
-      padding: 20px 130px;
-
-      .form-container {
+      .add-header {
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        height: 64px;
         background-color: #fff;
 
-        .title {
-          height: 60px;
-          line-height: 60px;
-          padding-left: 20px;
+        .left {
+          span {
+            margin-right: 4px;
+          }
+          .arrow{
+            cursor: pointer;
+          }
         }
 
-        .form {
-          margin-bottom: 20px;
-          padding: 20px 65px 24px;
+        .right {
+          text-align: right;
+        }
+      }
 
-          .el-form {
-            display: flex;
-            flex-wrap: wrap;
+      .add-main {
+        background: #f4f6f8;
+        padding: 20px 130px;
 
-            .el-form-item {
-              width: 50%;
+        .form-container {
+          background-color: #fff;
+
+          .title {
+            height: 60px;
+            line-height: 60px;
+            padding-left: 20px;
+          }
+
+          .form {
+            margin-bottom: 20px;
+            padding: 20px 65px 24px;
+
+            .el-form {
+              display: flex;
+              flex-wrap: wrap;
+
+              .el-form-item {
+                width: 50%;
+              }
             }
           }
         }
-      }
-      .preview{
-        img{
-          width: 100px;
+        .preview{
+          img{
+            width: 100px;
+          }
         }
       }
-    }
 
-    .add-footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      padding: 24px 50px;
-      color: #000000d9;
-      font-size: 14px;
-      background: #fff;
-      text-align: center;
+      .add-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        padding: 24px 50px;
+        color: #000000d9;
+        font-size: 14px;
+        background: #fff;
+        text-align: center;
+      }
     }
-  }
-  </style>
+    </style>
+
