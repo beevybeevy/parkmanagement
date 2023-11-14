@@ -56,7 +56,7 @@
     </main>
     <footer class="add-footer">
       <div class="btn-container">
-        <el-button>重置</el-button>
+        <el-button @click="reset">重置</el-button>
         <el-button type="primary" @click="doSubmit">确定</el-button>
       </div>
     </footer>
@@ -122,6 +122,11 @@ export default {
       ]
     }
   },
+  created() {
+  // 这里使用的是浅拷贝,不能直接写this.__carInfoForm = this.carInfoForm是因为这样就直接赋值了，不是拷贝
+    this.__carInfoForm = { ...this.carInfoForm }
+    this.__feeForm = { ...this.feeForm }
+  },
   methods: {
     doSubmit() {
       Promise.all([
@@ -145,6 +150,10 @@ export default {
         .catch(() => {
           console.log('校验失败')
         })
+    },
+    reset() {
+      this.carInfoForm = { ...this.__carInfoForm }
+      this.feeForm = { ...this.__feeForm }
     }
   }
 }
