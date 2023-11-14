@@ -18,22 +18,29 @@
             <el-form-item label="企业名称" prop="name">
               <el-input v-model="addForm.name" />
             </el-form-item>
-            <el-form-item label="法人" prop="name">
+            <el-form-item label="法人" prop="legalPerson">
               <el-input v-model="addForm.legalPerson" />
             </el-form-item>
-            <el-form-item label="注册地址" prop="name">
+            <el-form-item label="注册地址" prop="registeredAddress">
               <el-input v-model="addForm.registeredAddress" />
             </el-form-item>
-            <el-form-item label="所在行业" prop="name">
-              <el-select v-model="addForm.industryCode" />
+            <el-form-item label="所在行业" prop="industryCode">
+              <el-select v-model="addForm.industryCode">
+                <el-option
+                  v-for="item in options"
+                  :key="item.industryCode"
+                  :label="item.industryName"
+                  :value="item.industryCode"
+                />
+              </el-select>
             </el-form-item>
-            <el-form-item label="企业联系人" prop="name">
+            <el-form-item label="企业联系人" prop="contact">
               <el-input v-model="addForm.contact" />
             </el-form-item>
             <el-form-item label="联系电话" prop="contactNumber">
               <el-input v-model="addForm.contactNumber" />
             </el-form-item>
-            <el-form-item label="营业执照" prop="name" />
+            <el-form-item label="营业执照" prop="businessLicense" />
           </el-form>
         </div>
       </div>
@@ -49,6 +56,7 @@
 
 <script>
 import { createRequiredRule, createPatternRule } from '@/utils/validate'
+import { getIndustryListAPI } from '@/api/park'
 export default {
   data() {
     return {
@@ -64,9 +72,23 @@ export default {
       },
       enterpriseRules: {
         name: [createRequiredRule('必填项，不能为空')],
+        legalPerson: [createRequiredRule('必填项，不能为空')],
+        industryCode: [createRequiredRule('必选项，不能为空')],
+        registeredAddress: [createRequiredRule('必选项，不能为空')],
+        contact: [createRequiredRule('必选项，不能为空')],
+        businessLicense: [createRequiredRule('必选项，不能为空')],
         contactNumber: [createPatternRule(/^1\d{10}$/, '请输入正确的手机号'), createRequiredRule('必填项，不能为空')]
-      }
+      },
+      options: [
+
+      ],
+      value: ''
     }
+  },
+  async created() {
+    const res = await getIndustryListAPI()
+    console.log(res)
+    this.options = res.data
   }
 }
 </script>
