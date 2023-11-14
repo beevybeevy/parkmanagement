@@ -13,3 +13,8 @@ export function getCarCardListAPI(query) {
 export function addCarCardAPI(data) {
   return request.post('parking/card', data)
 }
+
+// 获取月卡详情
+export function getCarCardDetailAPI(id) {
+  return request.get(`parking/card/detail/${id}`)
+}

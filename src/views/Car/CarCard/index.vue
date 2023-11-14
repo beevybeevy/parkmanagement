@@ -37,10 +37,10 @@
           {{  }}
         </template> -->
         <el-table-column label="操作" fixed="right" width="180">
-          <template #default="scope">
+          <template #default="{row}">
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text">编辑</el-button>
+            <el-button size="mini" type="text" @click="$router.push('/cardAdd?id='+row.id)">编辑</el-button>
             <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -94,7 +94,7 @@ export default {
       list: [],
       query: {
         page: 1,
-        pageSize: 2,
+        pageSize: 5,
         carNumber: null,
         personName: null,
         cardStatus: null

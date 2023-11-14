@@ -1,5 +1,5 @@
 <template>
-  <div class="add-card">
+  <div v-loading="isLoading" class="add-card">
     <header class="add-header">
       <el-page-header content="增加月卡" @back="$router.back()" />
     </header>
@@ -65,10 +65,11 @@
 
 <script>
 import { createRequiredRule, createPatternRule } from '@/utils/validate'
-import { addCarCardAPI } from '@/api/car'
+import { addCarCardAPI, getCarCardDetailAPI } from '@/api/car'
 export default {
   data() {
     return {
+      isLoading: false,
       carInfoForm: {
         personName: '', // 车主姓名
         phoneNumber: '', // 联系方式
@@ -122,10 +123,31 @@ export default {
       ]
     }
   },
-  created() {
-  // 这里使用的是浅拷贝,不能直接写this.__carInfoForm = this.carInfoForm是因为这样就直接赋值了，不是拷贝
+  async created() {
+    this.isLoading = true
+    // 这里使用的是浅拷贝,不能直接写this.__carInfoForm = this.carInfoForm是因为这样就直接赋值了，不是拷贝
     this.__carInfoForm = { ...this.carInfoForm }
     this.__feeForm = { ...this.feeForm }
+    const id = this.$route.query.id
+    // console.log(id)
+
+    const res = await getCarCardDetailAPI(id)
+    this.isLoading = false
+    console.log(res)
+    this.carInfoForm = {
+      personName: res.data.personName,
+      phoneNumber: res.data.phoneNumber,
+      carNumber: res.data.carNumber,
+      carBrand: res.data.carBrand
+    },
+    this.feeForm = {
+      payTime: [
+        res.data.cardStartDate,
+        res.data.cardEndDate
+      ],
+      paymentAmount: res.data.paymentAmount, // 支付金额
+      paymentMethod: res.data.paymentMethod// 支付方
+    }
   },
   methods: {
     doSubmit() {
