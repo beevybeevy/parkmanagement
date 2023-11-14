@@ -50,7 +50,7 @@ export default {
       list: [],
       query: {
         page: 1,
-        pageSize: 3,
+        pageSize: 5,
         name: null
       },
       total: ''

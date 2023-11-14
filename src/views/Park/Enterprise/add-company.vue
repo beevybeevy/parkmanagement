@@ -47,7 +47,7 @@
     </main>
     <footer class="add-footer">
       <div class="btn-container">
-        <el-button>重置</el-button>
+        <el-button @click="reset">重置</el-button>
         <el-button type="primary">确定</el-button>
       </div>
     </footer>
@@ -79,16 +79,24 @@ export default {
         businessLicense: [createRequiredRule('必选项，不能为空')],
         contactNumber: [createPatternRule(/^1\d{10}$/, '请输入正确的手机号'), createRequiredRule('必填项，不能为空')]
       },
-      options: [
-
-      ],
+      options: [],
       value: ''
     }
   },
   async created() {
+    this.__addForm = { ...this.addForm }
     const res = await getIndustryListAPI()
-    console.log(res)
+    // console.log(res)
     this.options = res.data
+    // 完成数据浅拷贝
+  },
+  methods: {
+    reset() {
+      // 清空表单
+      this.addForm = { ...this.__addForm }
+      // 清空表单校验
+      this.$refs.ruleForm.clearValidate()
+    }
   }
 }
 </script>
