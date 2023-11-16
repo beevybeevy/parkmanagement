@@ -40,7 +40,7 @@
             <el-form-item label="联系电话" prop="contactNumber">
               <el-input v-model="addForm.contactNumber" />
             </el-form-item>
-            <el-form-item label="营业执照" prop="businessLicense">
+            <el-form-item label="营业执照" prop="businessLicenseId">
               <el-upload
                 class="upload-demo"
                 action="#"
@@ -67,7 +67,7 @@
 
 <script>
 import { createRequiredRule, createPatternRule } from '@/utils/validate'
-import { getIndustryListAPI, uploadFileAPI, addEnterpriseAPI } from '@/api/park'
+import { getIndustryListAPI, uploadFileAPI, addEnterpriseAPI, editEnterpriseAPI, getEnterpriseDetailAPI } from '@/api/park'
 export default {
   data() {
     return {
@@ -89,7 +89,7 @@ export default {
         industryCode: [createRequiredRule('必选项，不能为空')],
         registeredAddress: [createRequiredRule('必选项，不能为空')],
         contact: [createRequiredRule('必选项，不能为空')],
-        businessLicense: [createRequiredRule('必选项，不能为空')],
+        businessLicenseId: [createRequiredRule('必选项，不能为空')],
         contactNumber: [createPatternRule(/^1\d{10}$/, '请输入正确的手机号'), createRequiredRule('必填项，不能为空')]
       },
       options: [],
@@ -103,11 +103,21 @@ export default {
     // console.log(res)
     this.options = res.data
     // 完成数据浅拷贝
-    const id = this.$route.query.id
+    const id = Number(this.$route.query.id)
     // console.log(id)
     this.isEdit = !!id
-    // if (!isEdit) return
-    // this.id = id
+    if (!this.isEdit) return
+    this.id = id
+    const detail = await getEnterpriseDetailAPI(id)
+    console.log(detail)
+    this.addForm.name = detail.data.name, // 企业名称
+    this.addForm.legalPerson = detail.data.legalPerson, // 法人
+    this.addForm.registeredAddress = detail.data.registeredAddress, // 注册地址
+    this.addForm.industryCode = detail.data.industryCode, // 所在行业
+    this.addForm.contact = detail.data.contact, // 企业联系人
+    this.addForm.contactNumber = detail.data.contactNumber, // 联系人电话
+    this.addForm.businessLicenseUrl = detail.data.businessLicenseUrl, // 营业执照url
+    this.addForm.businessLicenseId = detail.data.businessLicenseId// 营业执照id
   },
   methods: {
     reset() {
@@ -117,12 +127,24 @@ export default {
       this.$refs.ruleForm.clearValidate()
     },
     doSubmit() {
-      addEnterpriseAPI(this.addForm).then(() => {
-        this.$message.success('操作成功')
-        this.$router.back()
-      }).catch(() => {})
+      const fn = this.isEdit ? editEnterpriseAPI : addEnterpriseAPI
+      if (this.isEdit) {
+        this.addForm.id = this.id
+      }
+      console.log(this.addForm)
+      // 手动校验
+      Promise.all([this.$refs.ruleForm.validate(), this.$refs.ruleForm.validateField('businessLicenseId')])
+        .then(() => {
+        // console.log(this.addForm)
+          return fn(this.addForm)
+        }).then(() => {
+          this.$message.success('操作成功')
+          this.$router.back()
+        }).catch(() => {
+          console.log('校验失败')
+        })
     },
-    async  uploadRequest(data) {
+    async uploadRequest(data) {
       console.log(data.file)
       const formData = new FormData()
       formData.append('file', data.file)
@@ -130,6 +152,9 @@ export default {
       const res = await uploadFileAPI(formData)
       this.addForm.businessLicenseId = res.data.id
       this.addForm.businessLicenseUrl = res.data.url
+      // 需要手动校验
+      console.log(this.$refs.ruleForm)
+      this.$refs.ruleForm.validateField('businessLicenseId')
     }
   }
 }

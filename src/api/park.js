@@ -20,3 +20,15 @@ export function uploadFileAPI(data) {
 export function addEnterpriseAPI(data) {
   return request.post('park/enterprise', data)
 }
+
+// 编辑企业
+export function editEnterpriseAPI(data) {
+  return request.put('park/enterprise',
+    data
+  )
+}
+
+// 获取企业详情
+export function getEnterpriseDetailAPI(id) {
+  return request.get(`park/enterprise/${id}`)
+}
