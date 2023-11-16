@@ -14,7 +14,7 @@
       <div class="form-container">
         <div class="title">企业信息</div>
         <div class="form">
-          <el-form ref="ruleForm" label-width="100px" :rules="enterpriseRules" :model="addForm">
+          <el-form ref="ruleForm" v-loading="isLoading" label-width="100px" :rules="enterpriseRules" :model="addForm">
             <el-form-item label="企业名称" prop="name">
               <el-input v-model="addForm.name" />
             </el-form-item>
@@ -40,7 +40,18 @@
             <el-form-item label="联系电话" prop="contactNumber">
               <el-input v-model="addForm.contactNumber" />
             </el-form-item>
-            <el-form-item label="营业执照" prop="businessLicense" />
+            <el-form-item label="营业执照" prop="businessLicense">
+              <el-upload
+                class="upload-demo"
+                action="#"
+                :limit="1"
+                :http-request="uploadRequest"
+              >
+                <el-button size="small" type="success" plain>点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  支持扩展名：.png .jpg .jpeg，文件大小不得超过5M</div>
+              </el-upload>
+            </el-form-item>
           </el-form>
         </div>
       </div>
@@ -48,7 +59,7 @@
     <footer class="add-footer">
       <div class="btn-container">
         <el-button @click="reset">重置</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button type="primary" @click="doSubmit">确定</el-button>
       </div>
     </footer>
   </div>
@@ -56,10 +67,12 @@
 
 <script>
 import { createRequiredRule, createPatternRule } from '@/utils/validate'
-import { getIndustryListAPI } from '@/api/park'
+import { getIndustryListAPI, uploadFileAPI, addEnterpriseAPI } from '@/api/park'
 export default {
   data() {
     return {
+      isEdit: '',
+      isLoading: false,
       addForm: {
         name: '', // 企业名称
         legalPerson: '', // 法人
@@ -80,7 +93,8 @@ export default {
         contactNumber: [createPatternRule(/^1\d{10}$/, '请输入正确的手机号'), createRequiredRule('必填项，不能为空')]
       },
       options: [],
-      value: ''
+      value: '',
+      fileList: [{ name: '', url: '' }]
     }
   },
   async created() {
@@ -89,6 +103,11 @@ export default {
     // console.log(res)
     this.options = res.data
     // 完成数据浅拷贝
+    const id = this.$route.query.id
+    // console.log(id)
+    this.isEdit = !!id
+    // if (!isEdit) return
+    // this.id = id
   },
   methods: {
     reset() {
@@ -96,6 +115,21 @@ export default {
       this.addForm = { ...this.__addForm }
       // 清空表单校验
       this.$refs.ruleForm.clearValidate()
+    },
+    doSubmit() {
+      addEnterpriseAPI(this.addForm).then(() => {
+        this.$message.success('操作成功')
+        this.$router.back()
+      }).catch(() => {})
+    },
+    async  uploadRequest(data) {
+      console.log(data.file)
+      const formData = new FormData()
+      formData.append('file', data.file)
+      formData.append('type', 'businessLicense')
+      const res = await uploadFileAPI(formData)
+      this.addForm.businessLicenseId = res.data.id
+      this.addForm.businessLicenseUrl = res.data.url
     }
   }
 }

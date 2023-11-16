@@ -9,3 +9,14 @@ export function getEnterpriseListAPI(query) {
 export function getIndustryListAPI() {
   return request.get('park/industry')
 }
+
+// 添加企业中的上传文件功能
+export function uploadFileAPI(data) {
+  return request.post('upload', data)
+}
+
+// 添加企业
+
+export function addEnterpriseAPI(data) {
+  return request.post('park/enterprise', data)
+}
