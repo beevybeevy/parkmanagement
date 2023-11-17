@@ -46,6 +46,7 @@
                 action="#"
                 :limit="1"
                 :http-request="uploadRequest"
+                :before-upload="beforeUpload"
               >
                 <el-button size="small" type="success" plain>点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">
@@ -155,6 +156,19 @@ export default {
       // 需要手动校验
       console.log(this.$refs.ruleForm)
       this.$refs.ruleForm.validateField('businessLicenseId')
+    },
+    // 上传前校验文件类型
+    beforeUpload(file) {
+      if (file.size / 1024 / 1024 > 0) {
+        this.$message.error('文件大小不能超过1M')
+        return false
+      }
+      const list = ['image/png', 'image/jpg', 'image/jpeg']
+      // 存储需要的格式
+      if (!list.includes(file.type)) {
+        this.$message.error('文件类型必须为npg,jpg,jpeg格式')
+        return false
+      }
     }
   }
 }
