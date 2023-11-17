@@ -24,7 +24,7 @@
               </el-table-column>
               <el-table-column label="操作" width="320">
                 <template #default="{row:childRow}">
-                  <el-button size="mini" type="text" :disabled="[0,3].includes(childRow.status)">续租</el-button>
+                  <el-button size="mini" type="text" :disabled="[0,3].includes(childRow.status)" @click="$refs.contractDialog.openEditDialog(row.id)">续租</el-button>
                   <el-button size="mini" type="text" :disabled="[3].includes(childRow.status)">退租</el-button>
                   <el-button size="mini" type="text" :disabled="[0, 1].includes(childRow.status)">删除</el-button>
                 </template>
@@ -38,7 +38,7 @@
         <el-table-column label="联系电话" prop="contactNumber" />
         <el-table-column label="操作">
           <template #default="{ row }">
-            <el-button size="mini" type="text">添加合同</el-button>
+            <el-button size="mini" type="text" @click="$refs.contractDialog.openAddDialog()">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id=' + row.id)">编辑</el-button>
             <el-button size="mini" type="text" @click="deleteEnterprise(row.id)">删除</el-button>
@@ -55,12 +55,17 @@
         @current-change="onCurrentChange"
       />
     </div>
+    <upsertContract ref="contractDialog" />
   </div>
 </template>
 
 <script>
 import { getEnterpriseListAPI, deleteEnterpriseAPI, getContractAPI } from '@/api/park'
+import upsertContract from '@/views/Park/Enterprise/upsert-contract.vue'
 export default {
+  components: {
+    upsertContract
+  },
   data() {
     return {
       isLoading: false,
