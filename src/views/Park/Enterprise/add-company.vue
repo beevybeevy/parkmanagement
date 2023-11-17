@@ -48,7 +48,8 @@
                 :http-request="uploadRequest"
                 :before-upload="beforeUpload"
               >
-                <el-button size="small" type="success" plain>点击上传</el-button>
+                <el-button v-if="!this.addForm.businessLicenseId" size="small" type="success" plain>点击上传</el-button>
+                <img v-else width="300px" :src="this.addForm.businessLicenseUrl" alt="">
                 <div slot="tip" class="el-upload__tip">
                   支持扩展名：.png .jpg .jpeg，文件大小不得超过5M</div>
               </el-upload>
@@ -159,7 +160,7 @@ export default {
     },
     // 上传前校验文件类型
     beforeUpload(file) {
-      if (file.size / 1024 / 1024 > 0) {
+      if (file.size / 1024 / 1024 > 1) {
         this.$message.error('文件大小不能超过1M')
         return false
       }
