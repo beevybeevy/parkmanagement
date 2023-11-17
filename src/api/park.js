@@ -37,3 +37,9 @@ export function getEnterpriseDetailAPI(id) {
 export function deleteEnterpriseAPI(id) {
   return request.delete(`park/enterprise/${id}`)
 }
+
+// 查询企业租赁信息的列表
+
+export function getContractAPI(id) {
+  return request.get(`park/enterprise/rent/${id}`)
+}

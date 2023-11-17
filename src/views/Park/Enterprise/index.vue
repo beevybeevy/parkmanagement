@@ -11,19 +11,31 @@
     </div>
     <!-- 表格区域 -->
     <div v-loading="isLoading" class="table">
-      <el-table style="width: 100%" :data="list">
+      <el-table style="width: 100%" :data="list" @expand-change="onExpandChange">
+        <el-table-column type="expand">
+          <template #default="{row}">
+            <el-table :data="row.rentList">
+              <el-table-column label="租赁楼宇" width="320" prop="buildingName" />
+              <el-table-column label="租赁起始时间" width="320" prop="startTime" />
+              <el-table-column label="合同状态" width="320" prop="status" />
+              <el-table-column label="操作" width="320">
+                <template #default>
+                  <el-button size="mini" type="text">退租</el-button>
+                  <el-button size="mini" type="text">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-table-column>
         <el-table-column type="index" label="序号" />
         <el-table-column label="企业名称" width="320" prop="name" />
         <el-table-column label="联系人" prop="contact" />
-        <el-table-column
-          label="联系电话"
-          prop="contactNumber"
-        />
+        <el-table-column label="联系电话" prop="contactNumber" />
         <el-table-column label="操作">
-          <template #default="{row}">
+          <template #default="{ row }">
             <el-button size="mini" type="text">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id='+row.id)">编辑</el-button>
+            <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id=' + row.id)">编辑</el-button>
             <el-button size="mini" type="text" @click="deleteEnterprise(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -42,7 +54,7 @@
 </template>
 
 <script>
-import { getEnterpriseListAPI, deleteEnterpriseAPI } from '@/api/park'
+import { getEnterpriseListAPI, deleteEnterpriseAPI, getContractAPI } from '@/api/park'
 export default {
   data() {
     return {
@@ -69,6 +81,11 @@ export default {
       this.isLoading = true
       const res = await getEnterpriseListAPI(this.query)
       this.isLoading = false
+      res.data.rows.forEach(item => {
+        item.rentList = []
+        item.isLoading = false
+      }
+      )
       this.list = res.data.rows
       this.total = res.data.total
       // console.log(this.total)
@@ -78,12 +95,25 @@ export default {
       this.getEnterpriseListAPI()
     },
     deleteEnterprise(id) {
-      this.$confirm('确定删除吗').then(async() => { await deleteEnterpriseAPI(id), this.getEnterpriseListAPI() })
+      this.$confirm('确定删除吗').then(
+        async() => {
+          await deleteEnterpriseAPI(id)
+          this.getEnterpriseListAPI()
+        })
       // this.$confirm('确定删除吗')
       //   .then(() => { return deleteEnterpriseAPI(id) })
       //   .then(() => { this.getEnterpriseListAPI() })
       //   .catch(() => {})
+    },
+    async onExpandChange(row, expandedRows = []) {
+      console.log(row, expandedRows)
+      // 判断当前是展开还是合上
+      if (!expandedRows.includes(row)) { return }
+      const res = await getContractAPI(row.id)
+      // 对数据进行渲染
+      row.rentList = res.data
     }
+
   }
 }
 
@@ -109,14 +139,17 @@ export default {
     margin-right: 10px;
   }
 }
-.create-container{
+
+.create-container {
   margin: 10px 0px;
 }
-.page-container{
-  padding:4px 0px;
+
+.page-container {
+  padding: 4px 0px;
   text-align: right;
 }
-.form-container{
-  padding:0px 80px;
+
+.form-container {
+  padding: 0px 80px;
 }
 </style>

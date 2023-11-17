@@ -4,7 +4,7 @@
       <div class="left">
         <span class="arrow" @click="$router.back()"><i class="el-icon-arrow-left" />返回</span>
         <span>|</span>
-        <span>添加企业</span>
+        <span>{{ isEdit?'编辑':'添加' }}企业</span>
       </div>
       <div class="right">
         黑马程序员
