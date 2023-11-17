@@ -17,11 +17,16 @@
             <el-table :data="row.rentList">
               <el-table-column label="租赁楼宇" width="320" prop="buildingName" />
               <el-table-column label="租赁起始时间" width="320" prop="startTime" />
-              <el-table-column label="合同状态" width="320" prop="status" />
+              <el-table-column label="合同状态" width="320" prop="status">
+                <template #default="{row:childRow}">
+                  <el-tag :type="getStatusInfo(childRow.status).type">{{ getStatusInfo(childRow.status).text }}</el-tag>
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="320">
-                <template #default>
-                  <el-button size="mini" type="text">退租</el-button>
-                  <el-button size="mini" type="text">删除</el-button>
+                <template #default="{row:childRow}">
+                  <el-button size="mini" type="text" :disabled="[0,3].includes(childRow.status)">续租</el-button>
+                  <el-button size="mini" type="text" :disabled="[3].includes(childRow.status)">退租</el-button>
+                  <el-button size="mini" type="text" :disabled="[0, 1].includes(childRow.status)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -112,8 +117,16 @@ export default {
       const res = await getContractAPI(row.id)
       // 对数据进行渲染
       row.rentList = res.data
+    },
+    getStatusInfo(statusVal = 0) {
+      const mapStaus = {
+        0: { type: 'primary', text: '待生效' },
+        1: { type: 'success', text: '生效中' },
+        2: { type: 'warning', text: '已过期' },
+        3: { type: 'info', text: '已退租' }
+      }
+      return mapStaus[statusVal]
     }
-
   }
 }
 
