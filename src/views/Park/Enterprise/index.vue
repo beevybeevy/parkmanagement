@@ -24,7 +24,7 @@
             <el-button size="mini" type="text">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id='+row.id)">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
+            <el-button size="mini" type="text" @click="deleteEnterprise(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { getEnterpriseListAPI } from '@/api/park'
+import { getEnterpriseListAPI, deleteEnterpriseAPI } from '@/api/park'
 export default {
   data() {
     return {
@@ -71,11 +71,18 @@ export default {
       this.isLoading = false
       this.list = res.data.rows
       this.total = res.data.total
-      console.log(this.total)
+      // console.log(this.total)
     },
     doSeach() {
       this.query.page = 1
       this.getEnterpriseListAPI()
+    },
+    deleteEnterprise(id) {
+      this.$confirm('确定删除吗').then(async() => { await deleteEnterpriseAPI(id), this.getEnterpriseListAPI() })
+      // this.$confirm('确定删除吗')
+      //   .then(() => { return deleteEnterpriseAPI(id) })
+      //   .then(() => { this.getEnterpriseListAPI() })
+      //   .catch(() => {})
     }
   }
 }

@@ -32,3 +32,8 @@ export function editEnterpriseAPI(data) {
 export function getEnterpriseDetailAPI(id) {
   return request.get(`park/enterprise/${id}`)
 }
+
+// 删除企业
+export function deleteEnterpriseAPI(id) {
+  return request.delete(`park/enterprise/${id}`)
+}
