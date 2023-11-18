@@ -24,7 +24,7 @@
               </el-table-column>
               <el-table-column label="操作" width="320">
                 <template #default="{row:childRow}">
-                  <el-button size="mini" type="text" :disabled="[0,3].includes(childRow.status)" @click="$refs.contractDialog.openEditDialog(row,1)">续租</el-button>
+                  <el-button size="mini" type="text" :disabled="[0,3].includes(childRow.status)" @click="$refs.contractDialog.openEditDialog(childRow,row,1)">续租</el-button>
                   <el-button size="mini" type="text" :disabled="[3].includes(childRow.status)">退租</el-button>
                   <el-button size="mini" type="text" :disabled="[0, 1].includes(childRow.status)">删除</el-button>
                 </template>
@@ -75,7 +75,7 @@ export default {
         pageSize: 5,
         name: null
       },
-      total: ''
+      total: 0
     }
   },
   created() {
@@ -116,7 +116,7 @@ export default {
       //   .catch(() => {})
     },
     async onExpandChange(row, expandedRows = []) {
-      console.log(row, expandedRows)
+      // console.log(row, expandedRows)
       // 判断当前是展开还是合上
       if (!expandedRows.includes(row)) { return }
       const res = await getContractAPI(row.id)

@@ -4,12 +4,25 @@
     <div class="form-container">
       <el-form ref="form" :model="form" label-width="80px" :rules="rentRules">
         <el-form-item label="租赁楼宇" prop="buildingId">
-          <el-select v-model="form.buildingId" placeholder="请选择租赁的楼宇">
+          <el-select v-if="isEdit" v-model="form.buildingId" :placeholder="buildingName" disabled />
+          <el-select v-else v-model="form.buildingId" placeholder="请选择租赁的楼宇">
             <el-option v-for="item in option" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
+
         </el-form-item>
         <el-form-item label="活动时间" prop="rentPeriod">
           <el-date-picker
+            v-if="isEdit"
+            v-model="form.rentPeriod"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd"
+            :picker-options="pickerOptions"
+          />
+          <el-date-picker
+            v-else
             v-model="form.rentPeriod"
             type="daterange"
             range-separator="至"
@@ -51,10 +64,10 @@ export default {
       // true: 打开（显示）弹框  false（关闭）
       showDialog: false,
       // 编辑状态
-      idEdit: '',
+      isEdit: '',
       form: {
         buildingId: '',
-        rentPeriod: '',
+        rentPeriod: ['', ''],
         contractId: '',
         contractUrl: '',
         enterpriseId: '',
@@ -62,6 +75,7 @@ export default {
         startTime: '',
         endTime: ''
       },
+      buildingName: '',
       option: [],
       pickerOptions: {
         disabledDate(time) {
@@ -84,20 +98,39 @@ export default {
   methods: {
     // 这个函数关闭控制新增状态下的弹框显示
     openAddDialog(row, type) {
-      this.idEdit = false
+      this.isEdit = false
       this.showDialog = true
-      console.log(row.id)
+      // console.log(row.id)
       this.form.type = type
       this.form.enterpriseId = row.id
       this.row = row
     },
     // 专门控制编辑状态下的弹框显示
-    openEditDialog(id) {
+    openEditDialog(childRow, row, type) {
       this.isEdit = true
-      console.log('企业id', id)
-      // 1. 调接口
-      // 2. 显示弹框
+      // console.log('childRow', childRow)
+      // console.log('row', row)
+      this.buildingName = childRow.buildingName
+      // this.newStartTime =
+      // 将字符串转换为日期对象
+      const dateString = childRow.endTime
+      const currentDate = new Date(dateString)
+      // 增加一天
+      currentDate.setDate(currentDate.getDate() + 1)
+      // 将修改后的日期对象转换回字符串
+      const modifiedDateString = currentDate.toISOString().split('T')[0]
+      // console.log(modifiedDateString)
+      // 输出 "2023-12-21"
+      this.form.rentPeriod = [modifiedDateString, modifiedDateString]
+      // this.form.rentPeriod[0] = modifiedDateString
+      // this.form.rentPeriod[1] = modifiedDateString
+      // 显示弹框
       this.showDialog = true
+      // console.log(this.form)
+      this.form.type = type
+      this.form.buildingId = childRow.buildingId
+      this.form.enterpriseId = row.id
+      this.row = row
     },
     // 打开
     addRent() {
@@ -105,7 +138,7 @@ export default {
     },
     // 关闭
     closeDialog() {
-      console.log('弹框要关闭了')
+      // console.log('弹框要关闭了')
       this.showDialog = false
     },
     async uploadRequest(data) {
@@ -137,6 +170,7 @@ export default {
       this.form.startTime = this.form.rentPeriod[0]
       this.form.endTime = this.form.rentPeriod[1]
       const { rentPeriod, ...formWithoutRentPeriod } = this.form
+      console.log(formWithoutRentPeriod)
       await addContractAPI(formWithoutRentPeriod)
       this.showDialog = false
       this.$emit('update', this.row)
