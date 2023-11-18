@@ -25,7 +25,7 @@
               <el-table-column label="操作" width="320">
                 <template #default="{row:childRow}">
                   <el-button size="mini" type="text" :disabled="childRow.renewFlag===0||childRow.exitFlag===0" @click="$refs.contractDialog.openEditDialog(childRow,row,1)">续租</el-button>
-                  <el-button size="mini" type="text" :disabled="[3].includes(childRow.status)">退租</el-button>
+                  <el-button size="mini" type="text" :disabled="[3].includes(childRow.status)" @click="cancelContract(row,childRow.id)">退租</el-button>
                   <el-button size="mini" type="text" :disabled="[0, 1].includes(childRow.status)" @click="deleteContract(row,childRow.id)">删除</el-button>
                 </template>
               </el-table-column>
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { getEnterpriseListAPI, deleteEnterpriseAPI, getContractAPI, deleteContractAPI } from '@/api/park'
+import { getEnterpriseListAPI, deleteEnterpriseAPI, getContractAPI, deleteContractAPI, cancelContractAPI } from '@/api/park'
 import upsertContract from '@/views/Park/Enterprise/upsert-contract.vue'
 export default {
   components: {
@@ -138,11 +138,22 @@ export default {
       // 对数据进行渲染
       row.rentList = res.data
     },
-    async deleteContract(row, id) {
-      this.$confirm('确定删除吗').then(
+    deleteContract(row, id) {
+      this.$confirm('操作不可逆，确定退租').then(
         async() => {
           await deleteContractAPI(id)
           this.$message.success('删除成功')
+          // console.log(id, childRow)
+          const res = await getContractAPI(row.id)
+          row.rentList = res.data
+        }
+      )
+    },
+    cancelContract(row, id) {
+      this.$confirm('操作不可逆，确定退租吗').then(
+        async() => {
+          await cancelContractAPI(id)
+          this.$message.success('退租成功')
           // console.log(id, childRow)
           const res = await getContractAPI(row.id)
           row.rentList = res.data

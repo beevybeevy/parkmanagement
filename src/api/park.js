@@ -58,3 +58,8 @@ export function addContractAPI(data) {
 export function deleteContractAPI(id) {
   return request.delete(`park/enterprise/rent/${id}`)
 }
+
+// 退租合同的接口
+export function cancelContractAPI(id) {
+  return request.put(`park/enterprise/rent/${id}`)
+}
