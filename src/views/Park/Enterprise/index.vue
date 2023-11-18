@@ -24,7 +24,7 @@
               </el-table-column>
               <el-table-column label="操作" width="320">
                 <template #default="{row:childRow}">
-                  <el-button size="mini" type="text" :disabled="[0,3].includes(childRow.status)" @click="$refs.contractDialog.openEditDialog(childRow,row,1)">续租</el-button>
+                  <el-button size="mini" type="text" :disabled="childRow.renewFlag===0||childRow.exitFlag===0" @click="$refs.contractDialog.openEditDialog(childRow,row,1)">续租</el-button>
                   <el-button size="mini" type="text" :disabled="[3].includes(childRow.status)">退租</el-button>
                   <el-button size="mini" type="text" :disabled="[0, 1].includes(childRow.status)">删除</el-button>
                 </template>
@@ -41,7 +41,7 @@
             <el-button size="mini" type="text" @click="$refs.contractDialog.openAddDialog(row,0)">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id=' + row.id)">编辑</el-button>
-            <el-button size="mini" type="text" @click="deleteEnterprise(row.id)">删除</el-button>
+            <el-button size="mini" type="text" :disabled="row.existContractFlag===1" @click="deleteEnterprise(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -134,6 +134,8 @@ export default {
     },
     async update(row) {
       const res = await getContractAPI(row.id)
+      const response = await getContractAPI(row.id)
+      // console.log('列表结果', response)
       // 对数据进行渲染
       row.rentList = res.data
     }

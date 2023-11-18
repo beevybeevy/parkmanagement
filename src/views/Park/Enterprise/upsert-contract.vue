@@ -108,8 +108,8 @@ export default {
     // 专门控制编辑状态下的弹框显示
     openEditDialog(childRow, row, type) {
       this.isEdit = true
-      // console.log('childRow', childRow)
-      // console.log('row', row)
+      console.log('childRow', childRow)
+      console.log('row', row)
       this.buildingName = childRow.buildingName
       // this.newStartTime =
       // 将字符串转换为日期对象

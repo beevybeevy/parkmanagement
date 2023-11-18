@@ -53,3 +53,4 @@ export function getBuildingList() {
 export function addContractAPI(data) {
   return request.post('park/enterprise/rent', data)
 }
+
