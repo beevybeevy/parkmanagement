@@ -54,3 +54,7 @@ export function addContractAPI(data) {
   return request.post('park/enterprise/rent', data)
 }
 
+// 删除企业合同的接口
+export function deleteContractAPI(id) {
+  return request.delete(`park/enterprise/rent/${id}`)
+}

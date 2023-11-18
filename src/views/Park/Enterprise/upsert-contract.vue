@@ -174,6 +174,7 @@ export default {
       await addContractAPI(formWithoutRentPeriod)
       this.showDialog = false
       this.$emit('update', this.row)
+      this.$message.success('操作成功')
     }
   }
 }
