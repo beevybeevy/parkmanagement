@@ -39,19 +39,63 @@
             </el-form-item>
           </el-form>
         </div>
+        <div class="title">租赁记录</div>
+        <div class="table-container">
+          <el-table
+            :data="form"
+            style="width: 100%"
+            border
+          >
+            <el-table-column
+              prop="index"
+              label="序号"
+              width="50"
+            />
+            <el-table-column
+              prop="name"
+              label="租赁楼宇"
+              width="180"
+            />
+            <el-table-column
+              label="租赁起止时间"
+              width="280"
+            >
+              <template #default="{row}">
+                {{ row.startTime }} - {{ row.endTime }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="租赁合同(点击预览)"
+            >
+              <template #default="{row}">
+                <el-button type="text">
+                  {{ row.contractName }}
+                </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="createTime"
+              label="录入时间"
+            />
+            <el-table-column
+              prop="address"
+              label="操作"
+            >
+              <template #default="{row}">
+                <el-button type="text">合同下载</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
       </div>
-    </main>
-    <footer class="add-footer">
-      <div class="btn-container">
-        <el-button @click="reset">重置</el-button>
-        <el-button type="primary" @click="doSubmit">确定</el-button>
-      </div>
-    </footer>
+    </main></div>
+  </main>
   </div>
 </template>
 
 <script>
-import { getIndustryListAPI, uploadFileAPI, addEnterpriseAPI, editEnterpriseAPI, getEnterpriseDetailAPI } from '@/api/park'
+import { getEnterpriseDetailAPI, getIndustryListAPI } from '@/api/park'
 export default {
   data() {
     return {
@@ -65,7 +109,7 @@ export default {
         businessLicenseUrl: '', // 营业执照url
         businessLicenseId: '' // 营业执照id
       },
-
+      form: {},
       options: [],
       value: '',
       fileList: [{ name: '', url: '' }]
@@ -93,56 +137,14 @@ export default {
     this.addForm.businessLicenseUrl = detail.data.businessLicenseUrl, // 营业执照url
     this.addForm.businessLicenseId = detail.data.businessLicenseId// 营业执照id
   },
+  mounted() {
+    this.getDetail()
+  },
   methods: {
-    reset() {
-      // 清空表单
-      this.addForm = { ...this.__addForm }
-      // 清空表单校验
-      this.$refs.ruleForm.clearValidate()
-    },
-    doSubmit() {
-      const fn = this.isEdit ? editEnterpriseAPI : addEnterpriseAPI
-      if (this.isEdit) {
-        this.addForm.id = this.id
-      }
-      console.log(this.addForm)
-      // 手动校验
-      Promise.all([this.$refs.ruleForm.validate(), this.$refs.ruleForm.validateField('businessLicenseId')])
-        .then(() => {
-          // console.log(this.addForm)
-          return fn(this.addForm)
-        }).then(() => {
-          this.$message.success('操作成功')
-          this.$router.back()
-        }).catch(() => {
-          console.log('校验失败')
-        })
-    },
-    async uploadRequest(data) {
-      console.log(data.file)
-      const formData = new FormData()
-      formData.append('file', data.file)
-      formData.append('type', 'businessLicense')
-      const res = await uploadFileAPI(formData)
-      this.addForm.businessLicenseId = res.data.id
-      this.addForm.businessLicenseUrl = res.data.url
-      // 需要手动校验
-      console.log(this.$refs.ruleForm)
-      //
-      this.$refs.ruleForm.validateField('businessLicenseId')
-    },
-    // 上传前校验文件类型
-    beforeUpload(file) {
-      if (file.size / 1024 / 1024 > 1) {
-        this.$message.error('文件大小不能超过1M')
-        return false
-      }
-      const list = ['image/png', 'image/jpg', 'image/jpeg']
-      // 存储需要的格式
-      if (!list.includes(file.type)) {
-        this.$message.error('文件类型必须为npg,jpg,jpeg格式')
-        return false
-      }
+    async getDetail() {
+      const res = await getEnterpriseDetailAPI(this.$route.query.id)
+      this.form = res.data.rent
+      console.log(this.form)
     }
   }
 }
