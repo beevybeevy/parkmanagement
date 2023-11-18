@@ -39,7 +39,7 @@
         <el-table-column label="操作">
           <template #default="{ row }">
             <el-button size="mini" type="text" @click="$refs.contractDialog.openAddDialog(row,0)">添加合同</el-button>
-            <el-button size="mini" type="text">查看</el-button>
+            <el-button size="mini" type="text" @click="$router.push('/enterpriseCheck?id='+row.id)">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id=' + row.id)">编辑</el-button>
             <el-button size="mini" type="text" :disabled="row.existContractFlag===1" @click="deleteEnterprise(row.id)">删除</el-button>
           </template>
