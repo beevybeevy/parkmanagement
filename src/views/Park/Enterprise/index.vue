@@ -38,7 +38,7 @@
         <el-table-column label="联系电话" prop="contactNumber" />
         <el-table-column label="操作">
           <template #default="{ row }">
-            <el-button size="mini" type="text" @click="$refs.contractDialog.openAddDialog()">添加合同</el-button>
+            <el-button size="mini" type="text" @click="$refs.contractDialog.openAddDialog(row,0)">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/enterpriseAdd?id=' + row.id)">编辑</el-button>
             <el-button size="mini" type="text" @click="deleteEnterprise(row.id)">删除</el-button>
@@ -55,7 +55,7 @@
         @current-change="onCurrentChange"
       />
     </div>
-    <upsertContract ref="contractDialog" />
+    <upsertContract ref="contractDialog" @update="update" />
   </div>
 </template>
 
@@ -131,6 +131,11 @@ export default {
         3: { type: 'info', text: '已退租' }
       }
       return mapStaus[statusVal]
+    },
+    async update(row) {
+      const res = await getContractAPI(row.id)
+      // 对数据进行渲染
+      row.rentList = res.data
     }
   }
 }

@@ -43,3 +43,13 @@ export function deleteEnterpriseAPI(id) {
 export function getContractAPI(id) {
   return request.get(`park/enterprise/rent/${id}`)
 }
+
+// 查询可租用楼宇的接口
+export function getBuildingList() {
+  return request.get('park/rent/building')
+}
+
+// 添加/续租企业的接口
+export function addContractAPI(data) {
+  return request.post('park/enterprise/rent', data)
+}
