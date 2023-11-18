@@ -2,13 +2,13 @@
   <el-dialog title="添加合同" :visible="showDialog" width="580px" @close="closeDialog">
     <!-- 表单区域 -->
     <div class="form-container">
-      <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="租赁楼宇">
+      <el-form ref="form" :model="form" label-width="80px" :rules="rentRules">
+        <el-form-item label="租赁楼宇" prop="buildingId">
           <el-select v-model="form.buildingId" placeholder="请选择租赁的楼宇">
             <el-option v-for="item in option" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="活动时间">
+        <el-form-item label="活动时间" prop="rentPeriod">
           <el-date-picker
             v-model="form.rentPeriod"
             type="daterange"
@@ -16,6 +16,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="yyyy-MM-dd"
+            :picker-options="pickerOptions"
           />
         </el-form-item>
         <el-form-item label="租赁合同" prop="contractId">
@@ -43,11 +44,14 @@
 
 <script>
 import { getBuildingList, uploadFileAPI, addContractAPI } from '@/api/park'
+import { createRequiredRule } from '@/utils/validate'
 export default {
   data() {
     return {
       // true: 打开（显示）弹框  false（关闭）
       showDialog: false,
+      // 编辑状态
+      idEdit: '',
       form: {
         buildingId: '',
         rentPeriod: '',
@@ -58,7 +62,17 @@ export default {
         startTime: '',
         endTime: ''
       },
-      option: []
+      option: [],
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7
+        }
+      },
+      rentRules: {
+        buildingId: [createRequiredRule('必选项不能为空')],
+        rentPeriod: [createRequiredRule('必选项不能为空')],
+        contractId: [createRequiredRule('必填项不能为空')]
+      }
 
     }
   },
@@ -70,7 +84,7 @@ export default {
   methods: {
     // 这个函数关闭控制新增状态下的弹框显示
     openAddDialog(row, type) {
-      // this.idEdit = false
+      this.idEdit = false
       this.showDialog = true
       console.log(row.id)
       this.form.type = type
