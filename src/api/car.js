@@ -38,3 +38,8 @@ export function getCarRuleListAPI(data) {
 export function deleteRuleAPI(id) {
   return request.delete(`parking/rule/${id}`)
 }
+
+// 添加计费规则
+export function addCarRuleAPI(data) {
+  return request.post('parking/rule', data)
+}

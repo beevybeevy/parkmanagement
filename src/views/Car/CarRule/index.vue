@@ -33,13 +33,13 @@
       :page-size="params.pageSize"
       @current-change="onCurrentChange"
     />
-    <upsert-rules ref="carRulesDialog" />
+    <upsert-rules ref="carRulesDialog" @update="handleUpdate" />
   </div>
 </template>
 
 <script>
 import { getCarRuleListAPI, deleteRuleAPI } from '@/api/car'
-import upsertRules from './upsert-rules.vue'
+import upsertRules from './upsert-rule1.vue'
 
 export default {
   name: 'Building',
@@ -88,6 +88,9 @@ export default {
         'turn': '按次收费'
       }
       return mapRules[chargeType]
+    },
+    handleUpdate() {
+      this.getCarRuleList()
     }
   }
 }
