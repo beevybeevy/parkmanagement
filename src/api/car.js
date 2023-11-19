@@ -43,3 +43,13 @@ export function deleteRuleAPI(id) {
 export function addCarRuleAPI(data) {
   return request.post('parking/rule', data)
 }
+
+// 查看计费规则
+export function checkCarRuleAPI(id) {
+  return request.get(`parking/rule/${id}`)
+}
+
+// 编辑计费规则
+export function editCarRuleAPI(data) {
+  return request.put('parking/rule', data)
+}

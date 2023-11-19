@@ -20,7 +20,7 @@
         <el-table-column label="计费规则" prop="ruleNameView" />
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="{row}">
-            <el-button size="mini" type="text">编辑</el-button>
+            <el-button size="mini" type="text" @click="$refs.carRulesDialog.openEditDialog(row.id)">编辑</el-button>
             <el-button size="mini" type="text" @click="deleteRule(row.id)">删除</el-button>
           </template>
         </el-table-column>

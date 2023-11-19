@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { addCarRuleAPI } from '@/api/car'
+import { addCarRuleAPI, checkCarRuleAPI, editCarRuleAPI } from '@/api/car'
 export default {
   data() {
     return {
@@ -204,9 +204,18 @@ export default {
       this.showDialog = true
     },
     // 专门控制编辑状态下的弹框显示
-    openEditDialog(id) {
+    async openEditDialog(id) {
       this.isEdit = true
+      this.id = id
       // 1. 调接口
+      const res = await checkCarRuleAPI(id)
+      console.log(res)
+      Object.keys(this.addForm).forEach((key) => {
+        this.addForm[key] = res.data[key]
+      })
+      // for (const [key] of Object.entries(this.addForm)) {
+      //   this.addForm[key] = res.data[key]
+      // }
       // 2. 显示弹框
       this.showDialog = true
     },
@@ -216,13 +225,19 @@ export default {
       // 2. 调接口，发请求
       // 3. 提示用户，触发事件给父组件
       // 4. 【父组件实现】父组件收到事件以后更新列表渲染
+      const fn = this.isEdit ? editCarRuleAPI : addCarRuleAPI
       this.$refs.addForm.validate()
         .then(() => {
+          if (this.isEdit) {
+            this.addForm.id = this.id
+          }
           // console.log('校验成功')
-          addCarRuleAPI(this.addForm).then(() => {
+          fn(this.addForm).then(() => {
             this.$message.success('添加规则成功')
             this.showDialog = false
             this.$emit('update')
+            // 还需要清空表单
+            this.$refs.addForm.resetField()
           })
         })
         .catch(() => {
