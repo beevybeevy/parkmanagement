@@ -170,7 +170,7 @@ export default {
       this.form.startTime = this.form.rentPeriod[0]
       this.form.endTime = this.form.rentPeriod[1]
       const { rentPeriod, ...formWithoutRentPeriod } = this.form
-      // console.log(rentPeriod)
+      console.log(rentPeriod)
       await addContractAPI(formWithoutRentPeriod)
       this.showDialog = false
       this.$emit('update', this.row)

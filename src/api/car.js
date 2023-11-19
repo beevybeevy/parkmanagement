@@ -28,3 +28,13 @@ export function editCarCardAPI(data) {
 export function deleteCarCardAPI(ids) {
   return request.delete(`parking/card/${ids}`)
 }
+
+// 获取计费规则的列表
+export function getCarRuleListAPI(data) {
+  return request.get('parking/rule/list', { params: { data }})
+}
+
+// 删除计费规则
+export function deleteRuleAPI(id) {
+  return request.delete(`parking/rule/${id}`)
+}
