@@ -13,26 +13,52 @@
       <el-button class="addBtn" size="mini" @click="$router.push('/addRole')">添加角色</el-button>
     </div>
     <div v-loading="isLoading" class="right-wrapper">
-      <div class="tree-wrapper">
-        <div v-for="(item,index) in permissionList" :key="item.id" class="tree-item">
-          <div class="tree-title"> {{ item.title }} </div>
-          <el-tree
-            ref="tree"
-            :data="item.children"
-            show-checkbox
-            node-key="id"
-            default-expand-all
-            :default-checked-keys="perms[index]"
-            :props="{label:'title'}"
-          />
-        </div>
-      </div>
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="功能权限" name="tree">
+          <div class="tree-wrapper">
+            <div v-for="(item,index) in permissionList" :key="item.id" class="tree-item">
+              <div class="tree-title"> {{ item.title }} </div>
+              <el-tree
+                ref="tree"
+                :data="item.children"
+                show-checkbox
+                node-key="id"
+                default-expand-all
+                :default-checked-keys="perms[index]"
+                :props="{label:'title'}"
+              />
+            </div>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="`成员(${roleUserList.length})`" name="member">
+          <div class="user-wrapper">
+            <el-table
+              :data="roleUserList"
+              style="width: 100%"
+            >
+              <el-table-column
+                type="index"
+                width="250"
+                label="序号"
+              />
+              <el-table-column
+                prop="name"
+                label="员工姓名"
+              />
+              <el-table-column
+                prop="userName"
+                label="登录账号"
+              />
+            </el-table>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
 
 <script>
-import { getAllRoleListAPI, getAllPermissionListAPI, checkRolePermissionAPI } from '@/api/system'
+import { getAllRoleListAPI, getAllPermissionListAPI, checkRolePermissionAPI, getRoleUserAPI } from '@/api/system'
 export default {
   name: 'Role',
   data() {
@@ -42,7 +68,9 @@ export default {
       permissionList: [],
       id: '',
       perms: [],
-      isLoading: false
+      isLoading: false,
+      activeName: 'tree',
+      roleUserList: []
     }
   },
   created() {
@@ -71,6 +99,8 @@ export default {
       // console.log('根据左侧id查询出来角色的权限点', this.perms)
       // console.log(this.$refs.tree)
       this.getALLPermissionList()
+      const response = await getRoleUserAPI(id)
+      this.roleUserList = response.data.rows
       this.isLoading = false
     }
   }

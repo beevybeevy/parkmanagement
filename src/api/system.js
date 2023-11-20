@@ -13,3 +13,8 @@ export function getAllPermissionListAPI() {
 export function checkRolePermissionAPI(id) {
   return request.get(`park/sys/role/${id}`)
 }
+
+// 查看角色关联用户的列表
+export function getRoleUserAPI(id, page, pageSize) {
+  return request.get(`/park/sys/roleUser/${id}`, { params: { page, pageSize }})
+}
