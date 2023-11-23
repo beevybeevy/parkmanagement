@@ -11,14 +11,14 @@
     <!-- 表格区域 -->
     <div class="table">
       <el-button type="primary">添加账单</el-button>
-      <el-table style="width: 100%">
-        <el-table-column prop="index" label="序号" />
-        <el-table-column label="账单编号" width="180" />
-        <el-table-column label="企业名称" />
-        <el-table-column label="租赁楼宇" width="120" />
-        <el-table-column label="物业费(元/m²)" width="120" />
-        <el-table-column label="账单金额(元)" />
-        <el-table-column label="缴费时间" />
+      <el-table style="width: 100%" :data="list">
+        <el-table-column prop="index" label="序号" type="index" />
+        <el-table-column label="账单编号" width="180" prop="billNumber" />
+        <el-table-column label="企业名称" prop="enterpriseName" />
+        <el-table-column label="租赁楼宇" width="120" prop="buildingName" />
+        <el-table-column label="物业费(元/m²)" width="120" prop="propertyFeePrice" />
+        <el-table-column label="账单金额(元)" prop="paymentAmount" />
+        <el-table-column label="缴费时间" prop="createTime" />
         <el-table-column label="操作">
           <template #default="scope">
             <el-button size="mini" type="text">编辑</el-button>
@@ -32,8 +32,23 @@
 </template>
 
 <script>
+import { getAllPropetyListAPI } from '@/api/propety'
 export default {
-  name: 'Building'
+  name: 'Building',
+  data() {
+    return {
+      list: []
+    }
+  },
+  created() {
+    this.getAllPropetyList()
+  },
+  methods: {
+    async getAllPropetyList() {
+      const res = await getAllPropetyListAPI()
+      this.list = res.data.rows
+    }
+  }
 }
 </script>
 
