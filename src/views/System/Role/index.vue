@@ -7,7 +7,19 @@
           {{ item.roleName }}
         </div>
         <div class="more">
-          <svg-icon icon-class="more" />
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <svg-icon icon-class="more" />
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                @click.native="$router.push(`/addRole?id=${item.roleId}`)"
+              >
+                编辑角色
+              </el-dropdown-item>
+              <el-dropdown-item @click.native="deleteRole(item.roleId)">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
       <el-button class="addBtn" size="mini" @click="$router.push('/addRole')">添加角色</el-button>
@@ -58,7 +70,7 @@
 </template>
 
 <script>
-import { getAllRoleListAPI, getAllPermissionListAPI, checkRolePermissionAPI, getRoleUserAPI } from '@/api/system'
+import { getAllRoleListAPI, getAllPermissionListAPI, checkRolePermissionAPI, getRoleUserAPI, deleteRoleAPI } from '@/api/system'
 export default {
   name: 'Role',
   data() {
@@ -102,6 +114,15 @@ export default {
       const response = await getRoleUserAPI(id)
       this.roleUserList = response.data.rows
       this.isLoading = false
+    },
+    deleteRole(id) {
+      this.$confirm('操作不可逆，确定删除吗').then(() => {
+        return deleteRoleAPI(id)
+        // 这里要写return 不然函数会直接执行到下一个then
+      }).then(() => {
+        this.getAllRoleList()
+        this.$message.success('删除成功')
+      }).catch(() => {})
     }
   }
 }

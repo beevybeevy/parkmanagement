@@ -18,3 +18,22 @@ export function checkRolePermissionAPI(id) {
 export function getRoleUserAPI(id, page, pageSize) {
   return request.get(`/park/sys/roleUser/${id}`, { params: { page, pageSize }})
 }
+
+// 添加角色
+export function addRoleAPI(data) {
+  return request.post('park/sys/role', data)
+}
+
+// 编辑当前角色
+export function updateRoleAPI(data) {
+  return request.put('park/sys/role', data)
+}
+// 获取当前的信息
+export function getRoleDetailAPI(roleId) {
+  return request.get(`park/sys/role/${roleId}`)
+}
+
+// 删除角色
+export function deleteRoleAPI(id) {
+  return request.delete(`park/sys/role/${id}`)
+}
