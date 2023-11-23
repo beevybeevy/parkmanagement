@@ -73,6 +73,17 @@ export const routes = [
       meta: { title: '计费规则管理' }
     }]
   },
+
+  {
+    path: '/propety',
+    component: Layout,
+    children: [{
+      path: '',
+      component: () => import('@/views/Propety/index.vue'),
+      meta: { title: '物业费管理', icon: 'el-icon-data-board' }
+    }]
+  },
+
   {
     path: '/pole',
     component: Layout,
