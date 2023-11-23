@@ -3,15 +3,15 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <div class="search-label">企业名称：</div>
-      <el-input placeholder="请输入内容" class="search-main" />
+      <el-input v-model="query.enterpriseName" placeholder="请输入内容" class="search-main" />
       <div class="search-label">缴费时间：</div>
-      <el-date-picker type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
-      <el-button type="primary">查询</el-button>
+      <el-date-picker v-model="time" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" />
+      <el-button type="primary" @click="doSearch">查询</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
       <el-button type="primary">添加账单</el-button>
-      <el-table style="width: 100%" :data="list">
+      <el-table v-loading="loading" style="width: 100%" :data="list">
         <el-table-column prop="index" label="序号" type="index" />
         <el-table-column label="账单编号" width="180" prop="billNumber" />
         <el-table-column label="企业名称" prop="enterpriseName" />
@@ -28,6 +28,15 @@
       </el-table>
 
     </div>
+    <div class="page-container">
+      <el-pagination
+        layout="total, prev, pager, next"
+        :total="total"
+        :current-page="query.page"
+        :page-size="query.pageSize"
+        @current-change="onCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -37,7 +46,26 @@ export default {
   name: 'Building',
   data() {
     return {
-      list: []
+      list: [],
+      query: {
+        page: 1,
+        pageSize: 10,
+        start: null,
+        end: null,
+        enterpriseName: null
+      },
+      total: 0,
+      loading: false,
+      time: ''
+    }
+  },
+  watch: {
+    time(newValue, oldValue) {
+      // 在time数据变化时触发的逻辑 如果清空之后需要更改start和end的值
+      if (newValue === null) {
+        this.query.start = null
+        this.query.end = null
+      }
     }
   },
   created() {
@@ -45,8 +73,27 @@ export default {
   },
   methods: {
     async getAllPropetyList() {
-      const res = await getAllPropetyListAPI()
+      this.loading = true
+      const res = await getAllPropetyListAPI(this.query)
+      this.loading = false
       this.list = res.data.rows
+      this.total = res.data.total
+      // console.log(res, this.total)
+    },
+    onCurrentChange(page) {
+      this.query.page = page
+      this.getAllPropetyList(this.query)
+    },
+    // 搜索栏进行筛选查询
+    doSearch() {
+      if (this.time) {
+        this.query.start = this.time[0]
+        this.query.end = this.time[1]
+      }
+      this.loading = true
+      this.getAllPropetyList(this.query)
+      this.loading = false
+      // console.log(this.query)
     }
   }
 }
