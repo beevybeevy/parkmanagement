@@ -39,7 +39,7 @@
     </div>
     <!-- 添加账单的弹窗 -->
     <el-dialog title="添加账单" :visible.sync="dialogFormVisible">
-      <el-form :model="form" :rules="propetyRules">
+      <el-form ref="form" :model="form" :rules="propetyRules">
         <el-form-item label="选择租户" label-width="200px" prop="enterpriseId">
           <el-select v-model="form.enterpriseId" placeholder="请选择租户">
             <el-option v-for="item in enterpriseOptions" :key="item.id" :label="item.name" :value="item.id" />
@@ -50,8 +50,7 @@
             <el-option v-for="item in buidingOptions" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>
-        <!-- 表单校验没有做完那，
-          清空日期后，需要提示选择缴费日期 -->
+        <!-- 表单校验没有做完 -->
         <el-form-item label="缴费周期" label-width="200px" prop="billTime">
           <el-date-picker v-model="form.billTime" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" />
         </el-form-item>
@@ -137,22 +136,20 @@ export default {
       form: {
         enterpriseId: '',
         buildingId: '',
-        startTime: '',
-        endTime: '',
         paymentAmount: '',
         // 付款方式1微信2支付宝3现金
         paymentMethod: '',
-        billTime: []
+        billTime: ''
       },
       enterpriseOptions: [],
       buidingOptions: [],
       billList: {},
       propetyRules: {
-        enterpriseId: [createRequiredRule('必填项，不能为空')],
-        buildingId: [createRequiredRule('必填项，不能为空')],
-        paymentAmount: [createRequiredRule('必填项，不能为空')],
-        paymentMethod: [createRequiredRule('必填项，不能为空')]
-
+        enterpriseId: [createRequiredRule('必选项，不能为空')],
+        buildingId: [createRequiredRule('必选项，不能为空')],
+        paymentAmount: [createRequiredRule('必选项，不能为空')],
+        paymentMethod: [createRequiredRule('必选项，不能为空')],
+        billTime: [createRequiredRule('必选项，不能为空')]
       }
     }
   },
@@ -236,14 +233,20 @@ export default {
     //   this.form.endTime = this.billTime[1]
     //   // console.log(this.form)
     // },
-    async doSubmit() {
-      this.form.startTime = this.form.billTime[0]
-      this.form.endTime = this.form.billTime[1]
-      delete this.form.billTime
-      await addBillAPI(this.form)
-      this.$message.success('添加账单成功')
-      this.dialogFormVisible = false
-      this.getAllPropetyList()
+    doSubmit() {
+      this.$refs.form.validate().then(async() => {
+        this.form.startTime = this.form.billTime[0]
+        this.form.endTime = this.form.billTime[1]
+        const formDataWithoutBillTime = { ...this.form }
+        delete formDataWithoutBillTime.billTime
+        await addBillAPI(formDataWithoutBillTime)
+        this.$message.success('添加账单成功')
+        this.dialogFormVisible = false
+        Object.keys(this.form).forEach((item) => {
+          this.form[item] = null
+        })
+        this.getAllPropetyList()
+      })
     },
     async doCheck(id) {
       const res = await checkBillAIP(id)
