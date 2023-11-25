@@ -18,8 +18,8 @@
         <el-button type="primary" class="queryButton" @click="doSearch">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-button type="primary">添加一体杆</el-button>
-    <el-button>批量删除</el-button>
+    <el-button type="primary" @click="$refs.manageRod.openAddDialog()">添加一体杆</el-button>
+    <el-button @click="deleteRod(ids)">批量删除</el-button>
     <!-- 表格部分 -->
     <el-table
       v-loading="loading"
@@ -27,6 +27,7 @@
       :row-key="row=>row.id"
       class="FormList"
       :header-cell-style="{ backgroundColor: '#f4f6f8' }"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
         :reserve-selection="true"
@@ -43,11 +44,15 @@
           {{ row.poleType === 'export' ? "入口" : "出口" }}
         </template>
       </el-table-column>
-      <el-table-column label="运行状态" prop="poleStatus" />
+      <el-table-column label="运行状态" prop="poleStatus">
+        <template #default="{row}">
+          {{ row.poleStatus === 0 ? "正常" : "异常" }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template #default="{ row }">
-          <el-button size="mini" type="text">编辑</el-button>
-          <el-button size="mini" type="text">删除</el-button>
+          <el-button size="mini" type="text" @click="$refs.manageRod.openEditDialog(row)">编辑</el-button>
+          <el-button size="mini" type="text" @click="deleteRod([row.id])">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -63,13 +68,18 @@
         @current-change="onCurrentChange"
       />
     </div>
+    <AddRod ref="manageRod" @update="getRodList()" />
   </div>
 </template>
 
 <script>
-import { getRodListAPI } from '@/api/rod'
+import { getRodListAPI, deleteRoeAPI } from '@/api/rod'
+import AddRod from './add-rod.vue'
 export default {
   name: '',
+  components: {
+    AddRod
+  },
   data() {
     return {
       loading: false,
@@ -86,7 +96,8 @@ export default {
         { label: '异常', value: 1 }
       ],
       tableData: [],
-      total: 0
+      total: 0,
+      showDialog: false
     }
   },
   created() {
@@ -109,7 +120,38 @@ export default {
       this.params.pageSize = val
       this.getRodList()
     },
-    doSearch() {}
+    doSearch() {
+      this.getRodList()
+    },
+    deleteRod(ids = []) {
+      if (ids.length === 0) {
+        this.$message.warning('请选择要删除的数据')
+        return
+      }
+      this.$confirm('此操作将永久删除数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+        // 1. 调接口
+          // 2. 提示用户
+          // 3. 重新渲染当前页（如果当前页有且只有一条数据，那么要渲染上一页）
+          return deleteRoeAPI(ids)
+        })
+        .then(() => {
+          this.$message.success('删除成功')
+          if (this.tableData.length === 1 && this.params.page > 1) {
+            this.params.page--
+          }
+          this.getRodList()
+        })
+        .catch(() => {})
+    },
+    handleSelectionChange(selection = []) {
+      this.ids = selection.map(item => item.id)
+      console.log(this.ids)
+    }
   }
 }
 </script>
