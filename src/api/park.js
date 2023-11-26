@@ -63,3 +63,8 @@ export function deleteContractAPI(id) {
 export function cancelContractAPI(id) {
   return request.put(`park/enterprise/rent/${id}`)
 }
+
+// 获取楼宇列表接口
+export function getAllBuildingListAPI(data) {
+  return request.get('park/building', { params: data })
+}
