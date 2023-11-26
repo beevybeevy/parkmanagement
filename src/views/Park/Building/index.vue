@@ -8,7 +8,7 @@
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-button type="primary">添加楼宇</el-button>
+      <el-button type="primary" @click="$refs.Building.openDialog()">添加楼宇</el-button>
       <el-table v-loading="loading" style="width: 100%" :data="list">
         <el-table-column prop="index" label="序号" type="index" />
         <el-table-column label="楼宇名称" width="180" prop="name" />
@@ -22,7 +22,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="{row}">
-            <el-button size="mini" type="text">查看</el-button>
+            <el-button size="mini" type="text" @click="$refs.Building.openEditDialog(row.id)">编辑</el-button>
             <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -37,13 +37,20 @@
         :page-size="query.pageSize"
         @current-change="onCurrentChange"
       />
+
     </div>
-  </div></template>
+    <AddBuilding ref="Building" @update="getBuildingList()" />
+  </div>
+</template>
 
 <script>
+import AddBuilding from './add-Building.vue'
 import { getAllBuildingListAPI } from '@/api/park'
 export default {
   name: 'Building',
+  components: {
+    AddBuilding
+  },
   data() {
     return {
       loading: false,

@@ -259,6 +259,9 @@ export default {
         return deleteBillAPI(id)
       }).then(() => {
         this.$message.success('删除成功')
+        if (this.list.length === 1 && this.query.page > 1) {
+          this.query.page--
+        }
         this.getAllPropetyList()
       })
     }

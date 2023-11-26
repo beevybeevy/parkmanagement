@@ -68,3 +68,17 @@ export function cancelContractAPI(id) {
 export function getAllBuildingListAPI(data) {
   return request.get('park/building', { params: data })
 }
+
+// 新增楼宇
+export function addBuidingAPI(data) {
+  return request.post('park/building', data)
+}
+// 查询楼宇详情
+export function checkBuildingAPI(id) {
+  return request.get(`park/building/${id}`)
+}
+
+// 编辑楼宇
+export function editBuildingAPI(data) {
+  return request.put('park/building', data)
+}
