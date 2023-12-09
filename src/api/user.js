@@ -13,3 +13,11 @@ export function loginAPI(data) {
     data
   })
 }
+
+/**
+ * 系统管理-登录成功-查询登录人用户、角色和权限信息
+ * @returns
+ */
+export function getProfileAPI() {
+  return request.get('/park/user/profile')
+}

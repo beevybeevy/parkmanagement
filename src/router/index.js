@@ -27,6 +27,12 @@ export const routes = [
     }]
   },
   {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  }]
+export const asyncRoutes = [
+  {
     path: '/park',
     component: Layout,
     permission: 'park',
@@ -119,11 +125,14 @@ export const routes = [
     }]
   },
   {
+    // 注册一个添加月卡的一级路由
     path: '/cardAdd',
+    permission: 'park:card:add',
     component: () => import('@/views/Car/CarCard/add-card')
   },
   {
     path: '/enterpriseAdd',
+    permission: 'park:enterprise:add',
     component: () => import('@/views/Park/Enterprise/add-company.vue')
   },
   {
@@ -131,15 +140,10 @@ export const routes = [
     component: () => import('@/views/Park/Enterprise/check-company.vue')
   },
   {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
-  {
     path: '/addRole',
+    permission: 'sys:role:add',
     component: () => import('@/views/System/Role/addRole.vue')
-  }
-]
+  }]
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support

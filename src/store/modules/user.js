@@ -1,10 +1,13 @@
-import { loginAPI } from '@/api/user'
+import { loginAPI, getProfileAPI } from '@/api/user'
 import { removeToken, setToken, getToken } from '@/utils/auth'
+import { routes } from '@/router'
 
 export default {
   namespaced: true,
   state: {
-    token: getToken() || ''
+    token: getToken() ?? '',
+    profile: {},
+    menuList: [...routes]
   },
   mutations: {
     // 修改Token的方法
@@ -15,6 +18,12 @@ export default {
       } else {
         removeToken()
       }
+    },
+    setProfile(state, profile) {
+      state.profile = profile
+    },
+    setMenuList(state, filterRoutes) {
+      state.menuList = [...state.menuList, ...filterRoutes]
     }
   },
   actions: {
@@ -22,6 +31,11 @@ export default {
       const res = await loginAPI({ username, password })
       // console.log(res)
       context.commit('setToken', res.data.token)
+    },
+    async getProfile(context) {
+      const res = await getProfileAPI()
+      context.commit('setProfile', res.data)
+      return res.data.permissions
     }
   }
 }

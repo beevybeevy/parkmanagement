@@ -11,8 +11,12 @@ import store from './store'
 
 import router from './router'
 
+import './permission'
+
 // 注册svg
 import '@/icons'
+
+import './registerMicroApp'
 
 Vue.use(ElementUI)
 
@@ -25,3 +29,5 @@ new Vue({
   store,
   render: h => h(App)
 })
+
+console.log(process.env.VUE_APP_BASE_API)
