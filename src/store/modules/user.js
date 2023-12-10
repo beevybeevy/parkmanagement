@@ -1,6 +1,6 @@
 import { loginAPI, getProfileAPI } from '@/api/user'
 import { removeToken, setToken, getToken } from '@/utils/auth'
-import { routes } from '@/router'
+import { routes, resetRouter } from '@/router'
 
 export default {
   namespaced: true,
@@ -24,6 +24,13 @@ export default {
     },
     setMenuList(state, filterRoutes) {
       state.menuList = [...state.menuList, ...filterRoutes]
+    },
+    clearLogin(state) {
+      state.token = ''
+      state.profile = {}
+      state.menuList = [...routes]
+      removeToken()
+      resetRouter()
     }
   },
   actions: {

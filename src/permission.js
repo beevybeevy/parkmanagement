@@ -18,6 +18,7 @@ router.beforeEach(async (to, form, next) => {
     if (!store.state.user.profile.id) {
       // 获取原始权限列表
       const permissions = await store.dispatch('user/getProfile')
+      console.log(permissions)
       let filterRoutes = asyncRoutes
       if (permissions[0] !== '*:*:*') {
         filterRoutes = filterRoutes.filter(item => {
@@ -42,7 +43,6 @@ router.beforeEach(async (to, form, next) => {
       })
       store.commit('user/setMenuList', [...filterRoutes])
 
-      // next(to.path)
       next()
       return
     }

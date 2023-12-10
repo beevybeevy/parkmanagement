@@ -139,6 +139,7 @@ export const asyncRoutes = [
     path: '/enterpriseCheck',
     component: () => import('@/views/Park/Enterprise/check-company.vue')
   },
+  // 添加角色
   {
     path: '/addRole',
     permission: 'sys:role:add',

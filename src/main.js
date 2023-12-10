@@ -13,6 +13,8 @@ import router from './router'
 
 import './permission'
 
+import './directive'
+
 // 注册svg
 import '@/icons'
 

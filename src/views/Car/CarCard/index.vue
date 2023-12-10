@@ -42,7 +42,7 @@
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push('/cardAdd?id='+row.id)">编辑</el-button>
-            <el-button size="mini" type="text" @click="deleteCarCard([row.id])">删除</el-button>
+            <el-button v-auth-btn="'parking:card:remove'" size="mini" type="text" @click="deleteCarCard([row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
