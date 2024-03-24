@@ -1,7 +1,5 @@
-# vue-admin
+# parkmanagement
 
-> 基于vue-admin-template的二次定制脚手架，去掉了一些繁琐的东西，升级了一些包
+This project was written during bootcamp in China and was previously committed on Gitee. So the git commit log and the code comments section are in Chinese.
 
-**Live demo:** http://panjiachen.github.io/vue-admin-template
-
-
+Dieses Projekt wurde während eines Bootcamps in China geschrieben und wurde zuvor auf Gitee übertragen. Daher sind das Git-Commit-Protokoll und der Abschnitt mit den Code-Kommentaren auf Chinesisch.
